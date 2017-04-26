@@ -1,7 +1,8 @@
 package jysk_shared;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Pallet {
+public class Pallet implements Serializable {
 
 	private ArrayList<Box> boxes;
 	

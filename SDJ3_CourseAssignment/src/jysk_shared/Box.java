@@ -1,12 +1,11 @@
 package jysk_shared;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Box {
+public class Box implements Serializable {
 
 	private int type;
 	private HashMap<Integer, Integer> items;
-
-	//Hej mads
 	
 	public Box() 
 	{
