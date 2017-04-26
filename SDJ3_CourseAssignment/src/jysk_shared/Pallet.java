@@ -4,11 +4,19 @@ import java.util.ArrayList;
 
 public class Pallet implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Box> boxes;
+	private String palletType; 
+	private String palletID;
 	
-	public Pallet() 
+	public Pallet(String palletType, String palletID) 
 	{
 		boxes = new ArrayList<>();
+		this.palletType = palletType; 
+		this.palletID = palletID; 
 	}
 	
 	public void addBox(Box box)
@@ -25,6 +33,18 @@ public class Pallet implements Serializable {
 				boxes.get(i).removeItem(item, amount);
 			}
 		}
+	}
+	
+	public int amountOfBoxes() {
+		return boxes.size(); 
+	}
+	
+	public String getType() {
+		return palletType; 
+	}
+	
+	public String getID() {
+		return palletID; 
 	}
 
 }

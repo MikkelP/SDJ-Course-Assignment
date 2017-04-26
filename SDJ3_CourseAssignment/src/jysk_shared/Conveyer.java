@@ -15,5 +15,5 @@ public interface Conveyer extends Remote {
 	void registerArrivalStation(Arrival station) throws RemoteException;
 
 	void sendTo(Pallet pallet, String destinationID, String sendWhere) throws RemoteException;
-
+	
 }
