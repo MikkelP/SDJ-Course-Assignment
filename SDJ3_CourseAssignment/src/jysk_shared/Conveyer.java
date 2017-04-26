@@ -5,11 +5,15 @@ import java.rmi.RemoteException;
 
 public interface Conveyer extends Remote {
 
-	
-	public void sendTo(Pallet pallet, int destination) throws RemoteException;
-	
-	public void addCrane(Crane crane) throws RemoteException;
-	
+		
 	public void startConveyer() throws RemoteException, NotBoundException;
+
+	void registerCrane(Crane crane) throws RemoteException;
+
+	void registerPickupStation(PickStation station) throws RemoteException;
+
+	void registerArrivalStation(Arrival station) throws RemoteException;
+
+	void sendTo(Pallet pallet, String destinationID, String sendWhere) throws RemoteException;
 
 }
