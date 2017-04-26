@@ -6,6 +6,8 @@ public class Box {
 	private int type;
 	private HashMap<Integer, Integer> items;
 
+	//Hej mads
+	
 	public Box() 
 	{
 		items = new HashMap<>();
