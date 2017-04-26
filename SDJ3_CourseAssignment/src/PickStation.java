@@ -22,12 +22,12 @@ public class PickStation {
 	
 	public Box handleOrder()
 	{
-		
+		return null;
 	}
 	
 	public int getId()
-	{
-		
+	{ 
+		return -1; 
 	}
 	
 	public void receivePallet (Pallet pallet)

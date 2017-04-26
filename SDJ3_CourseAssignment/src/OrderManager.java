@@ -12,7 +12,7 @@ public class OrderManager {
 	
 	public PickStation delegateOrder(Order order)
 	{
-		
+		return null;
 	}
 	
 	public void receiveOrder(Order order)
