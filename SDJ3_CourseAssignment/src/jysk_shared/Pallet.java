@@ -1,3 +1,4 @@
+package jysk_shared;
 import java.util.ArrayList;
 
 public class Pallet {

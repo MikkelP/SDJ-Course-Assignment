@@ -1,3 +1,4 @@
+package jysk_shared;
 import java.util.HashMap;
 
 public class Box {

@@ -1,3 +1,8 @@
+package main;
+
+import jysk_shared.Arrival;
+import jysk_shared.Conveyer;
+import jysk_shared.Crane;
 
 public class Setup {
 
