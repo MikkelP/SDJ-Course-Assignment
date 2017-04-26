@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import jysk_shared.Arrival;
@@ -21,7 +20,6 @@ public class RemoteConveyer extends UnicastRemoteObject implements Conveyer {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<Pallet> pallets; 
 	private Hashtable<String, PickStation> pickstations; 
 	private Hashtable<String, Arrival> arrivalstations;
 	private Hashtable<String, Crane> cranes; 
@@ -29,14 +27,9 @@ public class RemoteConveyer extends UnicastRemoteObject implements Conveyer {
 
 	public RemoteConveyer() throws RemoteException
 	{
-		pallets = new ArrayList<Pallet>(); 	
 		pickstations = new Hashtable<String, PickStation>(); 
 		arrivalstations = new Hashtable<String, Arrival>();
 		cranes = new Hashtable<String, Crane>(); 
-	}
-
-	public RemoteConveyer(ArrayList<Pallet> pallets) throws RemoteException {
-		this.pallets = pallets; 
 	}
 
 	@Override
