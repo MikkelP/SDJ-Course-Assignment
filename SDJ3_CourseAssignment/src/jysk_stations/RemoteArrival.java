@@ -1,4 +1,4 @@
-package jysk_conv;
+package jysk_stations;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

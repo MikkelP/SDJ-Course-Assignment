@@ -1,4 +1,4 @@
-package jysk_conv;
+package jysk_stations;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
