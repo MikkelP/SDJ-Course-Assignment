@@ -42,7 +42,7 @@ public class RemoteConveyer extends UnicastRemoteObject implements Conveyer {
 			break;
 
 		case "Crane":
-			cranes.get(destinationID).pickPalletFromConveyer(pallet);
+			cranes.get(destinationID).storePallet(pallet);
 			break;
 
 		default: 

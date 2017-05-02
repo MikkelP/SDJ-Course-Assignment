@@ -4,9 +4,18 @@ import java.util.ArrayList;
 
 public class Order implements Serializable {
 
-	private ArrayList<Integer> types;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
-	public Order(ArrayList<Integer> types) {
+	private ArrayList<String> types;
+	
+	public Order(ArrayList<String> types) {
 		this.types = types;
 	}	
+	
+	public ArrayList<String> getTypes() {
+		return types; 
+	}
 }

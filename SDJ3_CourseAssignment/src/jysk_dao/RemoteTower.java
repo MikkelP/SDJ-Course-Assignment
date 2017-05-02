@@ -1,21 +1,20 @@
-package jysk_conv;
+package jysk_dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import jysk_shared.Pallet;
 
-public class Tower implements ITower {
+public class RemoteTower implements ITower {
 
 	private Connection sqlCon; 
 	private final String sqlUsername = "postgres"; 
 	private final String sqlPassword = "123456"; 
 	private final String sqlHost = "jdbc:postgresql://localhost:5432/postgres"; 
 	
-	public Tower() {
+	public RemoteTower() {
 		try {
 			sqlCon = DriverManager.getConnection(sqlHost, sqlUsername, sqlPassword);
 		} catch (SQLException e) {

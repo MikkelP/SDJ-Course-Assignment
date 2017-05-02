@@ -1,4 +1,4 @@
-package jysk_conv;
+package jysk_dao;
 
 import jysk_shared.Pallet;
 

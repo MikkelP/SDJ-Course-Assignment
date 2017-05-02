@@ -4,6 +4,10 @@ import java.util.HashMap;
 
 public class Box implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int type;
 	private HashMap<Integer, Integer> items;
 	
