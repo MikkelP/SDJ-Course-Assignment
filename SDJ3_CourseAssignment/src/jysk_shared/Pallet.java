@@ -24,15 +24,16 @@ public class Pallet implements Serializable {
 		boxes.add(box);
 	}
 	
-	public void removeBox(int type, int item, int amount)
+	public boolean removeBox(String item, int amount)
 	{
 		for (int i = 0; i < boxes.size(); i++) 
 		{
-			if(boxes.get(i).getType() == type)
+			if(boxes.get(i).getType() == item)
 			{
-				boxes.get(i).removeItem(item, amount);
+				return boxes.get(i).removeItem(amount);
 			}
 		}
+		return false; 
 	}
 	
 	public int amountOfBoxes() {

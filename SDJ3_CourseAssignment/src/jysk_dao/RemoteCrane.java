@@ -16,7 +16,7 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 	private Conveyer conveyer;
 	private String craneID; 
 
-	protected RemoteCrane(RemoteTower tower, String craneID) throws RemoteException {
+	protected RemoteCrane(Tower tower, String craneID) throws RemoteException {
 		super();
 		towerData = tower;
 		this.craneID = craneID; 
@@ -60,7 +60,7 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 	@Override
 	public boolean retrievePallet(String pickstationID, String type) throws RemoteException {
 		if (conveyer != null) {
-			Pallet p = towerData.retrievePallet(type);	
+			Pallet p = towerData.retrievePallet();	
 			if (p != null) {
 				conveyer.sendTo(p, pickstationID, "Pickstation");
 				return true; 

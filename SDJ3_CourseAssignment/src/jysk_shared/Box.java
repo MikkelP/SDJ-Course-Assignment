@@ -1,6 +1,5 @@
 package jysk_shared;
 import java.io.Serializable;
-import java.util.HashMap;
 
 public class Box implements Serializable {
 
@@ -8,38 +7,38 @@ public class Box implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int type;
-	private HashMap<Integer, Integer> items;
-	
-	public Box() 
+	private String type;
+	private String item; 
+	private int amount; 
+
+	public Box(String type, String item, int amount)
 	{
-		items = new HashMap<>();
-	}
-	
-	public Box(int type)
-	{
-		this();
+		this.item = item;
+		this.amount = amount; 
 		this.type = type;
 	}
-	
-	public int getType() {
+
+	public String getType() {
 		return type;
 	}
-
-	public void addItem (int item, int amount)
-	{
-		items.put(item, amount);
-	}
 	
-	public boolean removeItem (int item, int amount)
-	{
-		int newAmount = items.get(item) - amount;
-		if (newAmount < 0)
-		{
-			return false;
-		}
-		items.put(item,  newAmount);
-		return true;	
+	public String getItem() {
+		return item; 
 	}
 
+	public void addItem (int amount)
+	{
+		this.amount += amount; 
+	}
+
+	public boolean removeItem (int amount)
+	{
+		int result = this.amount - amount;
+		if (result > 0) {
+			this.amount = result;
+			return true;
+		} else {
+			return false; 
+		}
+	}
 }
