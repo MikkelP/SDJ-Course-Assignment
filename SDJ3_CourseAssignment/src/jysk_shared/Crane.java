@@ -9,6 +9,8 @@ public interface Crane extends Remote {
 	
 	public String getCraneID();
 	
-	boolean retrievePallet(String pickstationID, String type) throws RemoteException;
+	void registerPickStation(PickStation pc);
+
+	boolean retrievePallet(String pickstationID, int orderID, String type) throws RemoteException;
 
 }

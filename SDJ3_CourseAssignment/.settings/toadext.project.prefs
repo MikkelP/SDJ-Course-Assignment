@@ -1,0 +1,4 @@
+DATABASE_LANGUAGE=MONGODB
+SQL_SOURCE_PATHS=src
+eclipse.preferences.version=1
+srcSQL_DETECTION=ON

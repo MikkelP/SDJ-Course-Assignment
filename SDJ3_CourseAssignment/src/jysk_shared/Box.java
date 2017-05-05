@@ -9,7 +9,7 @@ public class Box implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String type;
 	private String item; 
-	private int amount; 
+	private int amount;
 
 	public Box(String type, String item, int amount)
 	{
@@ -18,10 +18,14 @@ public class Box implements Serializable {
 		this.type = type;
 	}
 
+	public int getAmount() {
+		return amount; 
+	}
+
 	public String getType() {
 		return type;
 	}
-	
+
 	public String getItem() {
 		return item; 
 	}
@@ -40,5 +44,11 @@ public class Box implements Serializable {
 		} else {
 			return false; 
 		}
+	}
+
+	public String toString() {
+		return "Type: "+ type + "\n" +
+				"Item: "+ item +"\n"+
+				"Amount: "+ amount; 
 	}
 }

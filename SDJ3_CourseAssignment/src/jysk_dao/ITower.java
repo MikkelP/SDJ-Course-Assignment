@@ -4,8 +4,8 @@ import jysk_shared.Pallet;
 
 public interface ITower {
 
-	public boolean storePallet(Pallet pallet, String whatTower); 
+	Pallet retrievePallet();
 
-	Pallet retrievePallet(); 
+	boolean storePallet(Pallet pallet); 
 	
 }

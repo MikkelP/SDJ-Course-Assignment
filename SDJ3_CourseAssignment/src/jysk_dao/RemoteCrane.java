@@ -5,24 +5,49 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import jysk_shared.Conveyer;
 import jysk_shared.Crane;
 import jysk_shared.Pallet;
+import jysk_shared.PickStation;
 
 public class RemoteCrane extends UnicastRemoteObject implements Crane {
 
 	private ITower towerData; 
 	private Conveyer conveyer;
 	private String craneID; 
+	private Hashtable<String, PickStation> pcs; 
 
 	protected RemoteCrane(Tower tower, String craneID) throws RemoteException {
 		super();
 		towerData = tower;
 		this.craneID = craneID; 
 		doRegister(); 
+		try {
+			setUpCraneServer(tower);
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void registerPickStation(PickStation  pc) {
+		try {
+			pcs.put(pc.getId(), pc);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
+	private void setUpCraneServer(Tower tower) throws RemoteException, NotBoundException {
+		RemoteCrane rc = new RemoteCrane(tower, craneID);
+		Crane c = (Crane) UnicastRemoteObject.exportObject(rc, 8080);
+		Registry registry = LocateRegistry.createRegistry(1099);
+		registry.rebind("Crane", c);
+		System.out.println("Crane is running...");
+	}
 
 	private void doRegister() {
 		Conveyer conv = null;
@@ -50,18 +75,18 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 	@Override
 	public void storePallet(Pallet pallet) throws RemoteException {
 		if (conveyer != null) {
-			towerData.storePallet(pallet, pallet.getType()); 
+			towerData.storePallet(pallet); 
 		} else {
 			doRegister(); 
 		}
-
 	}
 
 	@Override
-	public boolean retrievePallet(String pickstationID, String type) throws RemoteException {
+	public boolean retrievePallet(String pickstationID, int orderID, String type) throws RemoteException {
 		if (conveyer != null) {
 			Pallet p = towerData.retrievePallet();	
 			if (p != null) {
+				p.setOrderID(orderID);
 				conveyer.sendTo(p, pickstationID, "Pickstation");
 				return true; 
 			} else {

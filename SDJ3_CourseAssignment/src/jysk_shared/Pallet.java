@@ -10,9 +10,10 @@ public class Pallet implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Box> boxes;
 	private String palletType; 
-	private String palletID;
+	private int palletID;
+	private int orderID; 
 	
-	public Pallet(String palletType, String palletID) 
+	public Pallet(String palletType, int palletID) 
 	{
 		boxes = new ArrayList<>();
 		this.palletType = palletType; 
@@ -22,6 +23,10 @@ public class Pallet implements Serializable {
 	public void addBox(Box box)
 	{
 		boxes.add(box);
+	}
+	
+	public ArrayList<Box> getBoxes() {
+		return boxes; 
 	}
 	
 	public boolean removeBox(String item, int amount)
@@ -44,8 +49,16 @@ public class Pallet implements Serializable {
 		return palletType; 
 	}
 	
-	public String getID() {
+	public int getID() {
 		return palletID; 
+	}
+	
+	public int getOrderID() {
+		return orderID; 
+	}
+	
+	public void setOrderID(int id) {
+		orderID = id; 
 	}
 
 }
