@@ -40,7 +40,6 @@ public class Tower implements ITower {
 		}
 	}
 
-	//This method is NOT done yet. 
 	@Override
 	public Pallet retrievePallet() {
 		try {
