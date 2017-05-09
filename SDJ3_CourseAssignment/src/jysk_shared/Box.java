@@ -10,7 +10,7 @@ public class Box implements Serializable {
 	private String type;
 	private String item; 
 	private int amount;
-
+	
 	public Box(String type, String item, int amount)
 	{
 		this.item = item;
@@ -35,15 +35,15 @@ public class Box implements Serializable {
 		this.amount += amount; 
 	}
 
-	public boolean removeItem (int amount)
+	public int removeItem (int amount) //Should return the amount removed
 	{
-		int result = this.amount - amount;
-		if (result > 0) {
-			this.amount = result;
-			return true;
-		} else {
-			return false; 
+		while (amount > this.amount) {
+			amount--;
 		}
+		
+		int result = this.amount - amount;
+		this.amount = result;
+		return amount;
 	}
 
 	public String toString() {

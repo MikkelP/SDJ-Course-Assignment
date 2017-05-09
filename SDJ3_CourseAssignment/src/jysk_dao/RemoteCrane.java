@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import jysk_shared.Conveyer;
@@ -20,10 +19,11 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 	private String craneID; 
 	private Hashtable<String, PickStation> pcs; 
 
-	protected RemoteCrane(Tower tower, String craneID) throws RemoteException {
-		super();
+	public RemoteCrane(Tower tower, String craneID) throws RemoteException {
+		super(8080);
 		towerData = tower;
 		this.craneID = craneID; 
+		pcs = new Hashtable<String, PickStation>();
 		doRegister(); 
 		try {
 			setUpCraneServer(tower);
@@ -42,10 +42,11 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 	}
 
 	private void setUpCraneServer(Tower tower) throws RemoteException, NotBoundException {
-		RemoteCrane rc = new RemoteCrane(tower, craneID);
-		Crane c = (Crane) UnicastRemoteObject.exportObject(rc, 8080);
-		Registry registry = LocateRegistry.createRegistry(1099);
-		registry.rebind("Crane", c);
+		Registry registry = LocateRegistry.getRegistry(1099);
+		if (registry == null) {
+			registry = LocateRegistry.createRegistry(1099);
+		}
+		registry.rebind(this.craneID, this);
 		System.out.println("Crane is running...");
 	}
 
@@ -59,6 +60,7 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 		} catch (RemoteException e1) {
 			System.err.println("Crane did not register properly to the Conveyer belt." +"\n"
 					+ "This is likely due to connection issues.");
+			e1.printStackTrace();
 			return;
 		} catch (NotBoundException e2) {
 			System.err.println("Crane did not register properly to the Conveyer belt."+"\n"

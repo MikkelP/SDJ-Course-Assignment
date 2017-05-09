@@ -13,7 +13,7 @@ import jysk_shared.Crane;
 import jysk_shared.Pallet;
 import jysk_shared.PickStation;
 
-public class RemoteConveyer extends UnicastRemoteObject implements Conveyer {
+public class RemoteConveyer implements Conveyer {
 
 	/**
 	 * 
@@ -38,6 +38,9 @@ public class RemoteConveyer extends UnicastRemoteObject implements Conveyer {
 		switch (sendWhere) {
 
 		case "Pickstation":
+			if (pickstations.get(destinationID) == null) {
+				System.out.println("Pickstation is null with dstID "+ destinationID);
+			}
 			pickstations.get(destinationID).receivePallet(pallet);
 			break;
 
@@ -62,13 +65,13 @@ public class RemoteConveyer extends UnicastRemoteObject implements Conveyer {
 
 	@Override
 	public void registerPickupStation(PickStation station) throws RemoteException {
+		System.out.println("id is: " + station.getId());
 		pickstations.put(station.getId(), station); 
 	}
 
 	@Override
 	public void startConveyer() throws RemoteException, NotBoundException {
-		RemoteConveyer rconv = new RemoteConveyer();
-		Conveyer conv = (Conveyer) UnicastRemoteObject.exportObject(rconv, 8080);
+		Conveyer conv = (Conveyer) UnicastRemoteObject.exportObject(this, 8090);
 		Registry registry = LocateRegistry.createRegistry(1099);
 		registry.rebind("Conveyer", conv);
 		System.out.println("Conveyer belt running...");

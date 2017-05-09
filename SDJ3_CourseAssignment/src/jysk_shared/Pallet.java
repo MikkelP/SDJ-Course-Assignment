@@ -29,16 +29,29 @@ public class Pallet implements Serializable {
 		return boxes; 
 	}
 	
-	public boolean removeBox(String item, int amount)
+	public Box getBox(String item) {
+		for(int i = 0; i < boxes.size(); i++) {
+			if (boxes.get(i).getItem().equals(item)) {
+				return boxes.get(i);
+			}
+		}
+		return null; //Item doesnt exist in box.
+	}
+	
+	public int takeItems(String item, int amount)
 	{
 		for (int i = 0; i < boxes.size(); i++) 
 		{
-			if(boxes.get(i).getType() == item)
+			if(boxes.get(i).getItem().equals(item))
 			{
-				return boxes.get(i).removeItem(amount);
+				int b = boxes.get(i).removeItem(amount);
+				if (boxes.get(i).getAmount() == 0) {
+					boxes.remove(i);
+				}
+				return b;
 			}
 		}
-		return false; 
+		return -1; //Item not found, couldn't remove. 
 	}
 	
 	public int amountOfBoxes() {

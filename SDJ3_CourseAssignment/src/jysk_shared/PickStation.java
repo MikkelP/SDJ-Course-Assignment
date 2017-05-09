@@ -8,10 +8,12 @@ public interface PickStation extends Remote {
 	
 	public Order sendAway() throws RemoteException;
 	
-	public Box handleOrder() throws RemoteException;
+	public OrderBox handleOrder() throws RemoteException;
 	
 	public String getId() throws RemoteException;
 	
 	public void receivePallet (Pallet pallet) throws RemoteException;
+
+	void setUpConnection(String connectTo) throws RemoteException;
 
 }
