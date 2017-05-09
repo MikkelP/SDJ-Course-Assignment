@@ -34,7 +34,7 @@ public class Tower implements ITower {
 			PreparedStatement ps = sqlCon.prepareStatement("CREATE DATABASE "+towerName);
 			ps.execute();
 			sqlCon.close(); 
-			
+
 			sqlCon = DriverManager.getConnection(sqlHost+towerName, sqlUsername, sqlPassword);
 			ps = sqlCon.prepareStatement("CREATE TABLE pallets ("
 					+ "id int PRIMARY KEY); CREATE TABLE boxes (id serial PRIMARY KEY, "
@@ -52,7 +52,7 @@ public class Tower implements ITower {
 			PreparedStatement ps = sqlCon.prepareStatement("INSERT INTO pallets (id) VALUES (?)"); 
 			ps.setInt(1, pallet.getID());
 			ps.execute();
-			
+
 			for (Box b : pallet.getBoxes()) {
 				ps = sqlCon.prepareStatement("INSERT INTO boxes (palletID, item, amount) VALUES (?, ?, ?)");
 				ps.setInt(1, pallet.getID());
@@ -71,29 +71,40 @@ public class Tower implements ITower {
 	public Pallet retrievePallet() {
 		try {
 			PreparedStatement ps = sqlCon.prepareStatement("SELECT * FROM pallets LIMIT 1");
-			
+
 			ResultSet rs = ps.executeQuery();
-			
-			rs.next(); 
-			int id = rs.getInt(1); 
-			
+
+			rs.next();
+		    int id = rs.getInt(1); 
+
+
 			Pallet p = new Pallet(type, id); 
-			
+
 			ps = sqlCon.prepareStatement("SELECT item, amount FROM boxes WHERE palletID = ?");
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
-			
+
 			while (rs.next()) {
 				String item = rs.getString(1);
 				int amount = rs.getInt(2); 
 				p.addBox(new Box(type, item, amount));
 			}
-			
+			removePallet(id); 
 			return p; 
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null; 
 		}
+	}
+
+	private void removePallet(int id) throws SQLException {
+		PreparedStatement ps = sqlCon.prepareStatement("DELETE FROM boxes WHERE palletid = ?");
+		ps.setInt(1, id);
+		ps.executeUpdate();
+
+		ps = sqlCon.prepareStatement("DELETE FROM pallets WHERE id = ?");
+		ps.setInt(1, id);
+		ps.executeUpdate();
 	}
 }

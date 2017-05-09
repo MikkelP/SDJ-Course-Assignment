@@ -24,6 +24,10 @@ public class Item
 		return amount; 
 	}
 	
+	public void setAmount(int amount) {
+		this.amount = amount; 
+	}
+	
 	public String toString() {
 		return "Item: " + itemName + "\n"
 				+ "Type: "+ type + "\n" 

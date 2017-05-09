@@ -5,46 +5,54 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Hashtable;
 
 import jysk_shared.Conveyer;
 import jysk_shared.Crane;
+import jysk_shared.CraneManager;
 import jysk_shared.Pallet;
-import jysk_shared.PickStation;
 
 public class RemoteCrane extends UnicastRemoteObject implements Crane {
 
 	private ITower towerData; 
 	private Conveyer conveyer;
 	private String craneID; 
-	private Hashtable<String, PickStation> pcs; 
 
 	public RemoteCrane(Tower tower, String craneID) throws RemoteException {
 		super(8080);
 		towerData = tower;
 		this.craneID = craneID; 
-		pcs = new Hashtable<String, PickStation>();
 		doRegister(); 
+		lookUpCraneManager();
 		try {
 			setUpCraneServer(tower);
 		} catch (NotBoundException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public void registerPickStation(PickStation  pc) {
+		
+	private void lookUpCraneManager() 
+	{
 		try {
-			pcs.put(pc.getId(), pc);
-		} catch (RemoteException e) {
-			e.printStackTrace();
+			Registry registry = LocateRegistry.getRegistry(1098);
+			registry.rebind(this.getCraneID(), this);
+			CraneManager cm = (CraneManager) registry.lookup("CraneManager");
+			cm.registerCrane(this);
+		} catch (RemoteException e1) {
+			System.err.println("Crane did not register properly to the CraneManager." +"\n"
+					+ "This is likely due to connection issues.");
+			e1.printStackTrace();
+			return;
+		} catch (NotBoundException e2) {
+			System.err.println("Crane did not register properly to the CraneManager."+"\n"
+					+ "This is due to trying to look up a register that has no associated binding.");
+			return;
 		}
 	}
-
+	
 	private void setUpCraneServer(Tower tower) throws RemoteException, NotBoundException {
-		Registry registry = LocateRegistry.getRegistry(1099);
+		Registry registry = LocateRegistry.getRegistry(1098);
 		if (registry == null) {
-			registry = LocateRegistry.createRegistry(1099);
+			registry = LocateRegistry.createRegistry(1098);
 		}
 		registry.rebind(this.craneID, this);
 		System.out.println("Crane is running...");
@@ -89,6 +97,7 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 			Pallet p = towerData.retrievePallet();	
 			if (p != null) {
 				p.setOrderID(orderID);
+				System.out.println("shit son");			
 				conveyer.sendTo(p, pickstationID, "Pickstation");
 				return true; 
 			} else {

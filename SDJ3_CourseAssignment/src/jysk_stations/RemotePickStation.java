@@ -12,7 +12,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import jysk_shared.Conveyer;
-import jysk_shared.Crane;
+import jysk_shared.CraneManager;
 import jysk_shared.Item;
 import jysk_shared.Order;
 import jysk_shared.OrderBox;
@@ -23,25 +23,27 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 
 	private Queue<Order> orders; 
 	private Hashtable<Integer, Pallet> pallets; 
-	private Crane crane; 
+	private CraneManager craneManager; 
 	private String id; 
+	private Conveyer conveyer;
 
 	public RemotePickStation(String id) throws RemoteException {
 		super();
 		orders = new LinkedList<Order>();
 		pallets = new Hashtable<Integer, Pallet>(); 
 		this.id = id;
-		doRegister(); 
+		doRegister(); //Conveyer belt
+		setUpConnection(); //Crane manager
 		Thread t = new Thread(new OrderHandler(this, true));
 		t.start();
 	}
-	@Override
-	public void setUpConnection(String connectTo) {
-		Crane c = null;
+
+	private void setUpConnection() {
+		CraneManager c = null;
 		try {
-			Registry registry = LocateRegistry.getRegistry(1099);
+			Registry registry = LocateRegistry.getRegistry(1098);
 			registry.rebind(this.id, this);
-			c = (Crane) registry.lookup(connectTo);
+			c = (CraneManager) registry.lookup("CraneManager");
 			c.registerPickStation(this);
 		} catch (RemoteException e1) {
 			System.err.println("Crane did not register properly to the Conveyer belt." +"\n"
@@ -52,14 +54,15 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 					+ "This is due to trying to look up a register that has no associated binding.");
 			return;
 		}
-		crane = c; 
+		craneManager = c; 
 	}
-	
+
 	private void doRegister() {
+		Conveyer conv = null;
 		try {
 			Registry registry = LocateRegistry.getRegistry(1099);
 			registry.rebind(this.id, this);
-			Conveyer conv = (Conveyer) registry.lookup("Conveyer");
+			conv = (Conveyer) registry.lookup("Conveyer");
 			conv.registerPickupStation(this);
 		} catch (RemoteException e1) {
 			System.err.println("Pick station did not register properly to the Conveyer belt." +"\n"
@@ -70,8 +73,9 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 					+ "This is due to trying to look up a register that has no associated binding.");
 			return;
 		}
+		conveyer = conv; 
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -79,8 +83,9 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 
 	@Override
 	public synchronized boolean receiveOrder(Order order) throws RemoteException {
-		notifyAll(); 
-		return orders.add(order); 
+		boolean p = orders.add(order);
+		notifyAll();
+		return p;
 	}
 
 	@Override
@@ -92,12 +97,7 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 	private void sendPalletRequest(ArrayList<String> types, String myId, int orderID) {
 		for (int i = 0; i < types.size(); i++) {
 			try {
-				if(crane == null) {
-					System.out.println("You done fucked up");
-				}
-				System.out.println("id is: "+myId +" orderid " + orderID + " type are " + types.get(i));
-				boolean success = crane.retrievePallet(myId, orderID, types.get(i));
-				System.out.println("Type: "+types.get(i) + " was retrieved: "+success);			
+				craneManager.retrievePallet(myId, orderID, types.get(i));		
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} 
@@ -120,22 +120,27 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 		for (String key : keys) 
 		{
 			int amtRemoved = 0; 
-			while (amtRemoved < itemsRequested.get(key).getAmount()) {
+			int initialRequest = itemsRequested.get(key).getAmount();
+			while (amtRemoved < initialRequest) {
 				if (pallets.get(o.getID()).getBox(key) != null) {
 					amtRemoved += pallets.get(o.getID()).takeItems(key, itemsRequested.get(key).getAmount()); 
+					itemsRequested.get(key).setAmount(itemsRequested.get(key).getAmount() - amtRemoved);
+					System.out.println("amount removed "+ amtRemoved);
 					if (amtRemoved == itemsRequested.get(key).getAmount()) { 
 						b.addItem(key, itemsRequested.get(key).getAmount());
 					} 
 				}
 			}
 		}
+		sendBackPallet(pallets.get(o.getID())); 
+		pallets.remove(o.getID());
+		notifyAll();
 		return b;
 	}
 
 	@Override
 	public synchronized OrderBox handleOrder() throws RemoteException {
 
-		System.out.println("Waiting to handle orders");
 		while (orders.isEmpty()) {
 			try {
 				wait();
@@ -143,21 +148,27 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 				e.printStackTrace();
 			}
 		}
-
 		Order o = orders.poll();
 		sendPalletRequest(o.getAllTypes(), id, o.getID());
-		System.out.println(Thread.currentThread() + " " + "Has handled an order.");
+		notifyAll(); 
 		return packOrder(o);
 	}
 
 	@Override
-	public synchronized void receivePallet(Pallet p) {
-		pallets.put(p.getID(), p); 
-		notifyAll(); 
+	public void receivePallet(Pallet p) {
+		pallets.put(p.getOrderID(), p); 
 	}
 
 	@Override
 	public String getId() throws RemoteException {
 		return id;
+	}
+	
+	private void sendBackPallet(Pallet p) {
+		try {
+			conveyer.sendTo(p, p.getType(), "Crane");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 }

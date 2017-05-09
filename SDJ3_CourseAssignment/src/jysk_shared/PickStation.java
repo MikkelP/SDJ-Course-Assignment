@@ -14,6 +14,4 @@ public interface PickStation extends Remote {
 	
 	public void receivePallet (Pallet pallet) throws RemoteException;
 
-	void setUpConnection(String connectTo) throws RemoteException;
-
 }
