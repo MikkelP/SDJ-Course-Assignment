@@ -15,11 +15,6 @@ import jysk_shared.PickStation;
 
 public class RemoteConveyer implements Conveyer {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private Hashtable<String, PickStation> pickstations; 
 	private Hashtable<String, Arrival> arrivalstations;
 	private Hashtable<String, Crane> cranes; 
@@ -38,11 +33,6 @@ public class RemoteConveyer implements Conveyer {
 		switch (sendWhere) {
 
 		case "Pickstation":
-			if (pickstations.get(destinationID) == null) {
-				System.out.println("Pickstation is null with dstID "+ destinationID);
-			} else {
-				System.out.println("Destination id "+ destinationID + " " + " What is the pallet order ID "+ pallet.getOrderID());
-			}
 		    pickstations.get(destinationID).receivePallet(pallet);
 			break;
 

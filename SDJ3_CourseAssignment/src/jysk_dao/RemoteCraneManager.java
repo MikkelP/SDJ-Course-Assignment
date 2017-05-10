@@ -14,11 +14,6 @@ import jysk_shared.PickStation;
 
 public class RemoteCraneManager implements CraneManager {
 	
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Hashtable<String, Crane> cranes; 
 	private Hashtable<String, PickStation> pcs;
 
@@ -54,6 +49,7 @@ public class RemoteCraneManager implements CraneManager {
 
 	@Override
 	public void registerCrane(Crane c) throws RemoteException {
+		System.out.println("Registering crane type: "+c.getCraneID());
 		try {
 			cranes.put(c.getCraneID(), c);
 		} catch (RemoteException e) {

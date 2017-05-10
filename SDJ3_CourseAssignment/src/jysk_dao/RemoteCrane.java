@@ -62,7 +62,7 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 		Conveyer conv = null;
 		try {
 			Registry registry = LocateRegistry.getRegistry(1099);
-			registry.rebind(this.getCraneID(), this);
+			registry.rebind(this.craneID, this);
 			conv = (Conveyer) registry.lookup("Conveyer");
 			conv.registerCrane(this);
 		} catch (RemoteException e1) {
@@ -96,8 +96,7 @@ public class RemoteCrane extends UnicastRemoteObject implements Crane {
 		if (conveyer != null) {
 			Pallet p = towerData.retrievePallet();	
 			if (p != null) {
-				p.setOrderID(orderID);
-				System.out.println("shit son");			
+				p.setOrderID(orderID);	
 				conveyer.sendTo(p, pickstationID, "Pickstation");
 				return true; 
 			} else {

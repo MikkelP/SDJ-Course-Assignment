@@ -11,8 +11,8 @@ public class OrderBox
 		items = new Hashtable<String, Integer>(); 
 	}
 	
-	public void addItem(String item, int amount) {
-		items.put(item, amount); 
+	public void addItem(String itemName, int amount) {
+		items.put(itemName, amount); 
 	}
 	
 	public String toString() {

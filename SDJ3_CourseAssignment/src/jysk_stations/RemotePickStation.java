@@ -17,12 +17,13 @@ import jysk_shared.Item;
 import jysk_shared.Order;
 import jysk_shared.OrderBox;
 import jysk_shared.Pallet;
+import jysk_shared.PalletCollection;
 import jysk_shared.PickStation;
 
 public class RemotePickStation extends UnicastRemoteObject implements PickStation {
 
 	private Queue<Order> orders; 
-	private Hashtable<Integer, Pallet> pallets; 
+	private Hashtable<Integer, PalletCollection> pallets; 
 	private CraneManager craneManager; 
 	private String id; 
 	private Conveyer conveyer;
@@ -30,7 +31,7 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 	public RemotePickStation(String id) throws RemoteException {
 		super();
 		orders = new LinkedList<Order>();
-		pallets = new Hashtable<Integer, Pallet>(); 
+		pallets = new Hashtable<Integer, PalletCollection>(); 
 		this.id = id;
 		doRegister(); //Conveyer belt
 		setUpConnection(); //Crane manager
@@ -117,21 +118,25 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 		Hashtable<String, Item> itemsRequested = o.getRequestedItems();
 		Set<String> keys = itemsRequested.keySet();
 		OrderBox b = new OrderBox(); 
+		
 		for (String key : keys) 
-		{
+		{	
 			int amtRemoved = 0; 
 			int initialRequest = itemsRequested.get(key).getAmount();
+			System.out.println("Handling item(s) "+key);
 			while (amtRemoved < initialRequest) {
 				if (pallets.get(o.getID()).getBox(key) != null) {
-					amtRemoved += pallets.get(o.getID()).takeItems(key, itemsRequested.get(key).getAmount()); 
+					amtRemoved += pallets.get(o.getID()).getBox(key).removeItems(itemsRequested.get(key).getAmount()); 
 					itemsRequested.get(key).setAmount(itemsRequested.get(key).getAmount() - amtRemoved);
-					System.out.println("amount removed "+ amtRemoved);
-					if (amtRemoved == itemsRequested.get(key).getAmount()) { 
-						b.addItem(key, itemsRequested.get(key).getAmount());
+					//System.out.println("amount removed "+ amtRemoved);
+					if (amtRemoved == initialRequest) { 
+						b.addItem(key, amtRemoved);
+						break;
 					} 
 				}
 			}
 		}
+
 		sendBackPallet(pallets.get(o.getID())); 
 		pallets.remove(o.getID());
 		notifyAll();
@@ -156,17 +161,28 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 
 	@Override
 	public void receivePallet(Pallet p) {
-		pallets.put(p.getOrderID(), p); 
+		if(pallets.get(p.getOrderID()) != null) {
+			pallets.get(p.getOrderID()).addPallet(p.getType(), p);
+			System.out.println("Putting in " +p.getType());
+		} else {
+			PalletCollection pc = new PalletCollection();
+			pc.addPallet(p.getType(), p);
+			pallets.put(p.getOrderID(), pc);
+			System.out.println("Putting in " +p.getType());
+		} 
 	}
 
 	@Override
 	public String getId() throws RemoteException {
 		return id;
 	}
-	
-	private void sendBackPallet(Pallet p) {
+
+	private void sendBackPallet(PalletCollection p) {
 		try {
-			conveyer.sendTo(p, p.getType(), "Crane");
+			Set<String> keys = p.getCollection().keySet();
+			for (String key : keys) {
+				conveyer.sendTo(p.getPallet(key), p.getPallet(key).getType(), "Crane");
+			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

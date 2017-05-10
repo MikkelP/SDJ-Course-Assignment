@@ -13,7 +13,7 @@ public class Tower implements ITower {
 
 	private Connection sqlCon; 
 	private String type; 
-	private String towerName; 
+	private String towerName;
 	private final String sqlUsername = "postgres"; 
 	private final String sqlPassword = "123456"; 
 	private final String sqlHost = "jdbc:postgresql://localhost:5432/"; 
@@ -24,7 +24,7 @@ public class Tower implements ITower {
 		} catch (SQLException e) {
 			connectToMaint(towerName);
 		} 
-		this.towerName = towerName; 
+		this.towerName=towerName;
 		type = typeOfItems; 
 	}
 
@@ -74,9 +74,15 @@ public class Tower implements ITower {
 
 			ResultSet rs = ps.executeQuery();
 
-			rs.next();
-		    int id = rs.getInt(1); 
-
+			int id = -1;
+			if(rs.next()) {
+				id = rs.getInt(1); 
+			}
+			
+			if(id == -1) {
+				System.err.println("There is no pallet with ID "+id +" in type "+type);
+				return null;
+			}
 
 			Pallet p = new Pallet(type, id); 
 

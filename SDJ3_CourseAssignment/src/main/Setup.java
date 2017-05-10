@@ -45,11 +45,17 @@ public class Setup {
 			for (int i = 0; i < 5; i++) {
 				p.addBox(b);
 			}
+			Pallet p2 = new Pallet("sengetoej", 55);
+			Box b1 = new Box("sengetoej", "dyne", 7);
+			for (int i = 0; i < 2; i++) {
+				p2.addBox(b1);
+			}
 
-			//as.sendToCrane(p);
+			as.sendToCrane(p);
+			as.sendToCrane(p2);
 			Order o = new Order(5); 
-			Item i = new Item("stol", "havemobler", 13);
-			Item i1 = new Item("dyne", "sengetoej", 8); 
+			Item i = new Item("stol", "havemobler", 4);
+			Item i1 = new Item("dyne", "sengetoej", 7); 
 			o.addItem("stol", i);
 			o.addItem("dyne", i1);
 			PickStation ps = new RemotePickStation("pick1");
@@ -57,10 +63,5 @@ public class Setup {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-
-
-
-
-
 	}
 }

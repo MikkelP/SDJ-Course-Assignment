@@ -44,7 +44,7 @@ public class Pallet implements Serializable {
 		{
 			if(boxes.get(i).getItem().equals(item))
 			{
-				int b = boxes.get(i).removeItem(amount);
+				int b = boxes.get(i).removeItems(amount);
 				if (boxes.get(i).getAmount() == 0) {
 					boxes.remove(i);
 				}
