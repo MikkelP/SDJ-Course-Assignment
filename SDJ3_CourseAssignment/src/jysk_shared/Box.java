@@ -37,8 +37,8 @@ public class Box implements Serializable {
 
 	public int removeItems (int amount) //Should return the amount removed
 	{
-		while (amount > this.amount) {
-			amount--;
+		if (amount > this.amount) {
+			amount = this.amount;
 		}
 		
 		int result = this.amount - amount;

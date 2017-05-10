@@ -118,17 +118,18 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 		Hashtable<String, Item> itemsRequested = o.getRequestedItems();
 		Set<String> keys = itemsRequested.keySet();
 		OrderBox b = new OrderBox(); 
-		
+
 		for (String key : keys) 
 		{	
 			int amtRemoved = 0; 
 			int initialRequest = itemsRequested.get(key).getAmount();
-			System.out.println("Handling item(s) "+key);
 			while (amtRemoved < initialRequest) {
 				if (pallets.get(o.getID()).getBox(key) != null) {
-					amtRemoved += pallets.get(o.getID()).getBox(key).removeItems(itemsRequested.get(key).getAmount()); 
-					itemsRequested.get(key).setAmount(itemsRequested.get(key).getAmount() - amtRemoved);
-					//System.out.println("amount removed "+ amtRemoved);
+					amtRemoved += pallets.get(o.getID()).getBox(key).removeItems(itemsRequested.get(key).getAmount());
+					if (pallets.get(o.getID()).getBox(key).getAmount() <= 0) {
+						pallets.get(o.getID()).removeBox(key);
+					}
+					itemsRequested.get(key).setAmount(initialRequest - amtRemoved);
 					if (amtRemoved == initialRequest) { 
 						b.addItem(key, amtRemoved);
 						break;
@@ -155,20 +156,19 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 		}
 		Order o = orders.poll();
 		sendPalletRequest(o.getAllTypes(), id, o.getID());
-		notifyAll(); 
-		return packOrder(o);
+		OrderBox box = packOrder(o);
+		notifyAll();
+		return box;
 	}
 
 	@Override
 	public void receivePallet(Pallet p) {
 		if(pallets.get(p.getOrderID()) != null) {
 			pallets.get(p.getOrderID()).addPallet(p.getType(), p);
-			System.out.println("Putting in " +p.getType());
 		} else {
 			PalletCollection pc = new PalletCollection();
 			pc.addPallet(p.getType(), p);
 			pallets.put(p.getOrderID(), pc);
-			System.out.println("Putting in " +p.getType());
 		} 
 	}
 
@@ -181,7 +181,9 @@ public class RemotePickStation extends UnicastRemoteObject implements PickStatio
 		try {
 			Set<String> keys = p.getCollection().keySet();
 			for (String key : keys) {
-				conveyer.sendTo(p.getPallet(key), p.getPallet(key).getType(), "Crane");
+				if (p.getPallet(key).amountOfBoxes() > 0) {
+					conveyer.sendTo(p.getPallet(key), p.getPallet(key).getType(), "Crane");
+				}
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();

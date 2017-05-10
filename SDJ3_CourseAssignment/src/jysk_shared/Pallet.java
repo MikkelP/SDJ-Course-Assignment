@@ -12,12 +12,29 @@ public class Pallet implements Serializable {
 	private String palletType; 
 	private int palletID;
 	private int orderID; 
+	private long timeStart;
+	private String sendFrom;
 	
-	public Pallet(String palletType, int palletID) 
+	public Pallet(String palletType, int palletID, String sendFrom) 
 	{
 		boxes = new ArrayList<>();
 		this.palletType = palletType; 
-		this.palletID = palletID; 
+		this.palletID = palletID;
+		this.sendFrom = sendFrom;
+		timeStart = System.currentTimeMillis(); 
+	}
+	
+	public void startTimer() {
+		timeStart = System.currentTimeMillis(); 
+	}
+	
+	public String getSendFrom() {
+		return sendFrom;
+	}
+	
+	public long getTimeDiff() {
+		long timeEnd = System.currentTimeMillis();
+		return timeEnd - timeStart; 
 	}
 	
 	public void addBox(Box box)
@@ -36,6 +53,16 @@ public class Pallet implements Serializable {
 			}
 		}
 		return null; //Item doesnt exist in box.
+	}
+	
+	public boolean removeBox(String item) {
+		for (int i = 0; i < boxes.size(); i++) {
+			if (boxes.get(i).getItem().equals(item) && boxes.get(i).getAmount() == 0) {
+				boxes.remove(i);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public int takeItems(String item, int amount)

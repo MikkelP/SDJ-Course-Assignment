@@ -57,7 +57,6 @@ public class RemoteConveyer implements Conveyer {
 
 	@Override
 	public void registerPickupStation(PickStation station) throws RemoteException {
-		System.out.println("id is: " + station.getId());
 		pickstations.put(station.getId(), station); 
 	}
 

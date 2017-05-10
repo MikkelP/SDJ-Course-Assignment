@@ -40,26 +40,42 @@ public class Setup {
 
 			as.openArrivalStation();
 
-			Pallet p = new Pallet("havemobler", 69);
+			Pallet p = new Pallet("havemobler", 69, "Arrival Station");
 			Box b = new Box("havemobler", "stol", 4);
 			for (int i = 0; i < 5; i++) {
 				p.addBox(b);
 			}
-			Pallet p2 = new Pallet("sengetoej", 55);
+			Pallet p2 = new Pallet("sengetoej", 55, "Arrival Station");
 			Box b1 = new Box("sengetoej", "dyne", 7);
 			for (int i = 0; i < 2; i++) {
 				p2.addBox(b1);
 			}
+			
+			Pallet p3 = new Pallet("kontor", 55, "Arrival Station"); 
+			Box b2 = new Box("kontor", "skrivebord", 3);
+			for (int i = 0; i < 2; i++) {
+				p3.addBox(b2);
+			}
 
 			as.sendToCrane(p);
 			as.sendToCrane(p2);
+			as.sendToCrane(p3);
 			Order o = new Order(5); 
-			Item i = new Item("stol", "havemobler", 4);
-			Item i1 = new Item("dyne", "sengetoej", 7); 
+			Item i = new Item("stol", "havemobler", 11);
+			Item i1 = new Item("dyne", "sengetoej", 12); 
+			Order o2 = new Order(6);
+			Item i2 = new Item("skrivebord", "kontor", 4); 
+			Item i3 = new Item("skrivebord", "kontor", 2);
+			o2.addItem("skrivebord", i2);
 			o.addItem("stol", i);
 			o.addItem("dyne", i1);
+			Order o3 = new Order(7);
+			o3.addItem("skrivebord", i3);
 			PickStation ps = new RemotePickStation("pick1");
+			PickStation ps1 = new RemotePickStation("pick2");
 			ps.receiveOrder(o);
+			ps.receiveOrder(o2); 
+			ps1.receiveOrder(o3);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

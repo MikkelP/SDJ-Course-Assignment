@@ -27,6 +27,7 @@ public class RemoteArrival extends UnicastRemoteObject implements Arrival {
 
 	@Override
 	public void sendToCrane(Pallet pallet) throws RemoteException {
+		pallet.startTimer();
 		conveyerBelt.sendTo(pallet, pallet.getType(), "Crane");
 	}
 
