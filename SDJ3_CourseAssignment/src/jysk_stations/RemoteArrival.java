@@ -15,7 +15,7 @@ public class RemoteArrival extends UnicastRemoteObject implements Arrival {
 	private String stationID; 
 	private Conveyer conveyerBelt; 
 
-	protected RemoteArrival(String stationID) throws RemoteException {
+	public RemoteArrival(String stationID) throws RemoteException {
 		super();
 		this.stationID = stationID; 	
 	}

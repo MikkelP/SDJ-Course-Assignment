@@ -4,11 +4,11 @@ import java.rmi.RemoteException;
 
 public interface PickStation extends Remote {
 
-	public void receiveOrder(Order order) throws RemoteException;
+	public boolean receiveOrder(Order order) throws RemoteException;
 	
-	public void sendAway() throws RemoteException;
+	public Order sendAway() throws RemoteException;
 	
-	public Box handleOrder() throws RemoteException;
+	public OrderBox handleOrder() throws RemoteException;
 	
 	public String getId() throws RemoteException;
 	

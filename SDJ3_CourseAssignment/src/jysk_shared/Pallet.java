@@ -10,9 +10,10 @@ public class Pallet implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Box> boxes;
 	private String palletType; 
-	private String palletID;
+	private int palletID;
+	private int orderID; 
 	
-	public Pallet(String palletType, String palletID) 
+	public Pallet(String palletType, int palletID) 
 	{
 		boxes = new ArrayList<>();
 		this.palletType = palletType; 
@@ -24,16 +25,33 @@ public class Pallet implements Serializable {
 		boxes.add(box);
 	}
 	
-	public boolean removeBox(String item, int amount)
+	public ArrayList<Box> getBoxes() {
+		return boxes; 
+	}
+	
+	public Box getBox(String item) {
+		for(int i = 0; i < boxes.size(); i++) {
+			if (boxes.get(i).getItem().equals(item)) {
+				return boxes.get(i);
+			}
+		}
+		return null; //Item doesnt exist in box.
+	}
+	
+	public int takeItems(String item, int amount)
 	{
 		for (int i = 0; i < boxes.size(); i++) 
 		{
-			if(boxes.get(i).getType() == item)
+			if(boxes.get(i).getItem().equals(item))
 			{
-				return boxes.get(i).removeItem(amount);
+				int b = boxes.get(i).removeItems(amount);
+				if (boxes.get(i).getAmount() == 0) {
+					boxes.remove(i);
+				}
+				return b;
 			}
 		}
-		return false; 
+		return -1; //Item not found, couldn't remove. 
 	}
 	
 	public int amountOfBoxes() {
@@ -44,8 +62,16 @@ public class Pallet implements Serializable {
 		return palletType; 
 	}
 	
-	public String getID() {
+	public int getID() {
 		return palletID; 
+	}
+	
+	public int getOrderID() {
+		return orderID; 
+	}
+	
+	public void setOrderID(int id) {
+		orderID = id; 
 	}
 
 }
